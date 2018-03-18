@@ -108,7 +108,8 @@ class TokensCoordinator: Coordinator {
     @objc func edit() {
         let controller = EditTokensViewController(
             session: session,
-            storage: store
+            storage: store,
+            network: network
         )
         navigationController.pushViewController(controller, animated: true)
     }

@@ -9,9 +9,11 @@ protocol TokensNetworkProtocol: TrustNetworkProtocol {
     func tokenBalance(for token: TokenObject, completion: @escaping (_ result: (TokenObject, Balance?)) -> Void)
     func assets(completion: @escaping (_ result: ([NonFungibleTokenCategory]?)) -> Void)
     func tokensList(for address: Address, completion: @escaping (_ result: ([TokenObject]?)) -> Void)
+    func search(token: String, completion: @escaping (([TokenObject]) -> Void))
 }
 
 class TokensNetwork: TokensNetworkProtocol {
+
     let provider: MoyaProvider<TrustService>
 
     let config: Config
@@ -97,6 +99,21 @@ class TokensNetwork: TokensNetworkProtocol {
                 }
             case .failure:
                     completion(nil)
+            }
+        }
+    }
+
+    func search(token: String, completion: @escaping (([TokenObject]) -> Void)) {
+        provider.request(.search(token: token)) { result in
+            switch result {
+            case .success(let response):
+                do {
+                    let tokens = try response.map([TokenObject].self)
+                    completion(tokens)
+                } catch {
+                    completion([])
+                }
+            case .failure: completion([])
             }
         }
     }
